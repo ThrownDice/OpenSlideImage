@@ -16,7 +16,7 @@ $(function(){
        }
    });
 
-    SlideMgr.addElement({
+    /*SlideMgr.addElement({
         innerHTML : 'test1 </br> test2',
         show_frame : 1,
         hide_frame : 30,
@@ -30,7 +30,7 @@ $(function(){
     SlideMgr.addElement({
         innerHTML : 'My Vision.......</br> is work together',
         show_frame : 35,
-        hide_frame : 45,
+        hide_frame : 65,
         attr : {
             fontSize : '15pt',
             color : 'white',
@@ -42,13 +42,13 @@ $(function(){
     SlideMgr.addElement({
         innerHTML : 'My hobby....</br> etc1...... Blah Blah~~ </br> OMG!!',
         show_frame : 45,
-        hide_frame : 55,
+        hide_frame : 75,
         attr : {
             fontSize : '12pt',
             color : 'white',
             left : '600px',
             top : '400px'
         }
-    });
+    });*/
 
 });
