@@ -6,7 +6,7 @@ Set configuration by using SlideMgr.setConfig method.
 Add Element with option to adjust your purpose. (like frame number which is point of showing time of element)
 
 #Example
-```
+```javascript
 SlideMgr.setConfig({
        container : container_element,
        start : 7,
