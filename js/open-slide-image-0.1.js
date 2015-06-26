@@ -54,10 +54,6 @@ var SlideMgr = {
 
 (function(window, document, SlideMgr){
 
-    /**
-     * set container element
-     * @param c {JSONObject} container div element
-     */
     SlideMgr.setConfig = function(cfg){
 
         //analyze container attribute
@@ -236,15 +232,11 @@ var SlideMgr = {
 
     };
 
-    /**
-     * addElement method
-     * @param obj {JSONObject}
-     */
     SlideMgr.addElement = function(obj){
         var node = {};
         var attr = obj.attr;
         node.ele = document.createElement('div');
-        node.show_frame = obj.show_frame ? obj.show_frame : 0
+        node.show_frame = obj.show_frame ? obj.show_frame : 0;
         node.hide_frame = obj.hide_frame ? obj.hide_frame : 0;
         node._s_flag = false;
         for(var key in attr){
