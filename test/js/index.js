@@ -13,8 +13,31 @@ $(function(){
        animate_interval : 10,
        callback : function(){
 
+           SlideMgr.addText({
+               show_frame : 10,
+               hide_frame : 50,
+               animate_frame : 10,
+               text : 'My Vision',
+               font : '30px Georgia',
+               x : 100,
+               y : 100
+           });
+
+           SlideMgr.addText({
+               show_frame : 40,
+               hide_frame : 70,
+               animate_frame : 10,
+               text : 'is co-working',
+               font : '30px Georgia',
+               x : 200,
+               y : 200
+           });
+
        }
    });
+
+
+
 
     /*SlideMgr.addElement({
         innerHTML : 'test1 </br> test2',

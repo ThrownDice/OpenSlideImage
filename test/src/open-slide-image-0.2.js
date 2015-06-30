@@ -20,8 +20,7 @@ var SlideMgr = {
 
     current_frame : null,
 
-    img : null,
-    img_container : [],
+    frame_container : [],
 
     scroll : {
         clicked : null,
@@ -42,13 +41,12 @@ var SlideMgr = {
         ele_percent : null
     },
 
-    animate_interval : null,
-    animate_queue : [],
-    _fn_animate : {},
+    layer_counter : null,
+    layer_type : {
+        TEXT : 'text',
+        IMG : 'img'
+    }
 
-    ele_container : [],
-    ele_counter : null,
-    ele_id_prefix : '-osi-el-'
 
 };
 
@@ -131,7 +129,10 @@ var SlideMgr = {
         img.onload = (function(idx, callback){
             SlideMgr._load_chain(idx + 1, callback);
         })(SlideMgr.start, callback);
-        SlideMgr.img_container.push(img);
+        var frame = {};
+        frame.img = img;
+        frame.ele_container = [];
+        SlideMgr.frame_container.push(frame);
 
         blocker.style.background = 'black';
         blocker.style.width = SlideMgr.container.width + 'px';
@@ -164,136 +165,100 @@ var SlideMgr = {
                 SlideMgr.render_queue.push(idx);
                 setTimeout(SlideMgr._load_chain, 10, idx + 1, callback);
             })(idx, callback);
-            SlideMgr.img_container.push(img);
+            var frame = {};
+            frame.img = img;
+            frame.ele_container = [];
+            SlideMgr.frame_container.push(frame);
         }else{
             SlideMgr.render_queue.push(SlideMgr.start);
-            SlideMgr._fn_animate.hide(document.getElementsByClassName('blocker')[0], 1000);
+            (function(){
+                var opacity = 1.0;
+                var blocker = document.getElementsByClassName('blocker')[0];
+                var animate = function(){
+                    if(opacity > 0){
+                        opacity = opacity - 0.01;
+                        blocker.style.opacity = opacity;
+                        requestAnimationFrame(animate);
+                    }else{
+                        blocker.style.display = 'none';
+                    }
+                };
+                requestAnimationFrame(animate);
+            })();
             if(callback) callback();
         }
     };
 
-    SlideMgr.addElement = function(obj){
-        var node = {};
-        var attr = obj.attr;
-        node.ele = document.createElement('div');
-        node.show_frame = obj.show_frame ? obj.show_frame : 0;
-        node.hide_frame = obj.hide_frame ? obj.hide_frame : 0;
-        node._s_flag = false;
-        for(var key in attr){
-            if(key){
-                if(key == 'left') node.ele.style.left = SlideMgr.container.ele.documentOffsetLeft + attr[key];
-                else if(key == 'top') node.ele.style.top = SlideMgr.container.ele.documentOffsetTop + attr[key];
-                else node.ele.style[key] = attr[key];
+    SlideMgr.addText = function(cfg){
+        var show_frame = cfg.show_frame - SlideMgr.start;
+        var hide_frame = cfg.hide_frame - SlideMgr.start;
+        var animate_frame = cfg.animate_frame;
+        var layer_id = SlideMgr.layer_counter++;
+        if( (show_frame > hide_frame) || ( (animate_frame * 2) > (hide_frame - show_frame) )){
+            throw 'bound exception';
+        }else{
+
+            for(var i = show_frame ; i < hide_frame; i++){
+
+                var layer = {};
+                var opacity;
+                layer.id = layer_id;
+                layer.type = SlideMgr.layer_type.TEXT;
+                layer.text = cfg.text;
+                layer.x = cfg.x;
+                layer.y = cfg.y;
+                layer.font = cfg.font;
+
+                if( (i >= show_frame) && (i < (show_frame + animate_frame))){
+                    opacity = (1.0 / animate_frame) * (i - show_frame);
+                }else if( ( i >= (show_frame + animate_frame) ) && ( i < (hide_frame - animate_frame))  ){
+                    opacity = 1.0;
+                }else if( ( i>= (hide_frame - animate_frame)) && (i < hide_frame)){
+                    opacity = 1.0 - (1.0 / animate_frame) * (i - (hide_frame - animate_frame));
+                }
+
+                layer.rgba = 'rgba(255,255,255,' + opacity + ')';
+
+                console.log(i);
+
+                SlideMgr.frame_container[i].ele_container.push(layer);
             }
         }
-        node.ele.style.position = 'absolute';
-        node.ele.style.display = '';
-        node.ele.style.opacity = 0.0;
-        node.ele.id = SlideMgr.ele_id_prefix + SlideMgr.ele_counter++;
-        node.ele.innerHTML = obj.innerHTML;
+    };
 
-        SlideMgr.ele_container.push(node);
-        SlideMgr.container.ele.appendChild(node.ele);
+    SlideMgr.addImage = function(cfg){
+
     };
 
     SlideMgr.manageElement = function(){
-        var len = SlideMgr.ele_container.length;
-        for(var i = 0; i<len; i++){
-            var node = SlideMgr.ele_container[i];
-            if(SlideMgr.current_frame >= node.show_frame && SlideMgr.current_frame < node.hide_frame && !node._s_flag){
-                SlideMgr._fn_animate.show(node.ele, 1000);
-                node._s_flag = true;
-            }else if((SlideMgr.current_frame < node.show_frame || SlideMgr.current_frame >= node.hide_frame) && node._s_flag){
-                SlideMgr._fn_animate.hide(node.ele, 1000);
-                node._s_flag = false;
-            }
-        }
+
     };
 
     SlideMgr.render = function(){
-
-        //SlideMgr.canvas.ele.width = SlideMgr.canvas.ele.width;
-
         if(SlideMgr.render_queue[0]){
-            SlideMgr.canvas.context2d.drawImage(SlideMgr.img_container[SlideMgr.render_queue[0] - SlideMgr.start], 0,0,SlideMgr.container.width,SlideMgr.container.height);
-            SlideMgr.render_queue.splice(0,1);
+            var frame = SlideMgr.frame_container[SlideMgr.render_queue[0] - SlideMgr.start];
+            var ele_container = frame.ele_container;
+            var len = ele_container.length;
+            SlideMgr.canvas.context2d.drawImage(frame.img, 0,0,SlideMgr.container.width,SlideMgr.container.height);
 
-            if(SlideMgr.current_frame >= 10 && SlideMgr.current_frame <= 50){
-             var alpha;
+            for(var i = 0; i<len; i++){
 
-             if(SlideMgr.current_frame >= 20 && SlideMgr.current_frame <= 40){
-             alpha = 1.0;
-             }else if(SlideMgr.current_frame < 10 || SlideMgr.current_frame > 50){
-             alpha = 0;
-             }else if(SlideMgr.current_frame >= 10 && SlideMgr.current_frame < 20){
-             alpha = 0.1 * (SlideMgr.current_frame - 10);
-             }else if(SlideMgr.current_frame > 40 && SlideMgr.current_frame <= 50){
-             alpha = 1.0 - 0.1 * (SlideMgr.current_frame - 40);
-             }
-             SlideMgr.canvas.context2d.font = '15px Arial';
-             SlideMgr.canvas.context2d.fillStyle = 'rgba(255,255,255,' + alpha + ')';
-             SlideMgr.canvas.context2d.fillText('testetstestse!! </br> testeste!!', 100, 100);
-             }
-        }
+                var layer = ele_container[i];
+                console.log(layer.type);
+                console.log(layer.text);
+                switch(layer.type){
 
-        /*if(SlideMgr.current_frame >= 10 && SlideMgr.current_frame <= 50){
-            var alpha;
-
-            if(SlideMgr.current_frame >= 20 && SlideMgr.current_frame <= 40){
-                alpha = 1.0;
-            }else if(SlideMgr.current_frame < 10 || SlideMgr.current_frame > 50){
-                alpha = 0;
-            }else if(SlideMgr.current_frame >= 10 && SlideMgr.current_frame < 20){
-                alpha = 0.1 * (SlideMgr.current_frame - 10);
-            }else if(SlideMgr.current_frame > 40 && SlideMgr.current_frame <= 50){
-                alpha = 1.0 - 0.1 * (SlideMgr.current_frame - 10);
+                    case SlideMgr.layer_type.TEXT :
+                        SlideMgr.canvas.context2d.font = layer.font;
+                        SlideMgr.canvas.context2d.fillStyle = layer.rgba;
+                        SlideMgr.canvas.context2d.fillText(layer.text, layer.x, layer.y);
+                        console.log('drawing text : ' + layer.text);
+                        break;
+                }
             }
-            SlideMgr.canvas.context2d.font = '15px Arial';
-            SlideMgr.canvas.context2d.fillStyle = 'rgba(255,255,255,' + alpha + ')';
-            SlideMgr.canvas.context2d.fillText('testetstestse!! </br> testeste!!', 100, 100);
-        }*/
 
-        if(SlideMgr.animate_queue[0]){
-            (function(job){
-                var len = job.length;
-                var i = 0;
-                var interval_id = setInterval(function(){
-                    if(i == len){
-                        clearInterval(interval_id);
-                    }else{
-                        var ele = job[i].ele;
-                        var attr = job[i].attr;
-                        for(var key in attr){
-                            ele.style[key] = attr[key];
-                        }
-                        i++;
-                    }
-                }, SlideMgr.animate_interval);
-                SlideMgr.animate_queue.splice(0,1);
-            })(SlideMgr.animate_queue[0]);
+            SlideMgr.render_queue.splice(0,1);
         }
-    };
-
-    SlideMgr.animate = function(){
-        /*if(SlideMgr.animate_queue[0]){
-            (function(job){
-                var len = job.length;
-                var i = 0;
-                var interval_id = setInterval(function(){
-                    if(i == len){
-                        clearInterval(interval_id);
-                    }else{
-                        var ele = job[i].ele;
-                        var attr = job[i].attr;
-                        for(var key in attr){
-                            ele.style[key] = attr[key];
-                        }
-                        i++;
-                    }
-                }, SlideMgr.animate_interval);
-                SlideMgr.animate_queue.splice(0,1);
-            })(SlideMgr.animate_queue[0]);
-        }*/
     };
 
     SlideMgr.createScroll = function(opt){
@@ -341,60 +306,6 @@ var SlideMgr = {
         if(SlideMgr.load_info.ele_percent){
             SlideMgr.load_info.ele_percent.innerHTML = percent + '%';
         }
-    };
-
-    //animation function
-    //--------------------------------------------------------------------------
-    var _fn = SlideMgr._fn_animate;
-
-    _fn.show = function(ele, time){
-        var limit = Math.ceil(time / SlideMgr.animate_interval);
-        var unit = 1.0 / limit;
-        var job = [];
-
-        job.push({
-            ele : ele,
-            attr : {
-                display : ''
-            }
-        });
-
-        for(var i = 0; i<= limit ; i++){
-            var opacity = unit * i;
-            opacity = opacity <= 1.0 ? opacity : 1.0;
-            console.log(opacity);
-            job.push({
-                ele : ele,
-                attr : {
-                    opacity : opacity
-                }
-            });
-        }
-        SlideMgr.animate_queue.push(job);
-    };
-
-    _fn.hide = function(ele, time){
-        var limit = Math.ceil(time / SlideMgr.animate_interval);
-        var unit = -1.0 / limit;
-        var job = [];
-
-        for(var i = 0; i<= limit ; i++){
-            var opacity = 1.0 + unit * i;
-            opacity = opacity > 0 ? opacity : 0;
-            job.push({
-                ele : ele,
-                attr : {
-                    opacity : opacity
-                }
-            });
-        }
-        job.push({
-            ele : ele,
-            attr : {
-                display : 'none'
-            }
-        });
-        SlideMgr.animate_queue.push(job);
     };
 
 })(window, document, SlideMgr);
