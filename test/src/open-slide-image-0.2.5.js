@@ -45,16 +45,17 @@ var SlideMgr = {
     layer_type : {
         TEXT : 'text',
         IMG : 'img'
-    }
+    },
 
+    util : {}
 
 };
 
 (function(window, document, SlideMgr){
 
     SlideMgr.setConfig = function(cfg){
-        var container_width = Number(getStyle(cfg.container, 'width').match(/\d+/g));
-        var container_height = Number(getStyle(cfg.container, 'height').match(/\d+/g));
+        var container_width = Number(SlideMgr.util.getStyle(cfg.container, 'width').match(/\d+/g));
+        var container_height = Number(SlideMgr.util.getStyle(cfg.container, 'height').match(/\d+/g));
         SlideMgr.container.ele = cfg.container;
         SlideMgr.container.width = container_width;
         SlideMgr.container.height = container_height;
@@ -84,7 +85,7 @@ var SlideMgr = {
 
         document.addEventListener('mousemove', function(event){
             if(SlideMgr.scroll.clicked){
-                var y = (event.clientY - SlideMgr.container.ele.documentOffsetTop) - SlideMgr.scroll.clicked_offset;
+                var y = (event.clientY - SlideMgr.container.ele._osi_documentOffsetTop) - SlideMgr.scroll.clicked_offset;
                 var translate_ratio = (SlideMgr.end - SlideMgr.start) / (SlideMgr.container.height - SlideMgr.scroll.height);
                 var current_frame;
                 if(y < 0) y = 0;
@@ -102,7 +103,7 @@ var SlideMgr = {
             SlideMgr.scroll.clicked = false;
         });
 
-        addWheelListener(SlideMgr.container.ele, function(event){
+        _osi_addWheelListener(SlideMgr.container.ele, function(event){
             if((SlideMgr.current_frame <= SlideMgr.end) && (SlideMgr.current_frame >= SlideMgr.start)){
                 event.deltaY > 0 ? SlideMgr.current_frame++ : SlideMgr.current_frame--;
                 if(SlideMgr.current_frame > SlideMgr.end) SlideMgr.current_frame = SlideMgr.end;
@@ -138,8 +139,8 @@ var SlideMgr = {
         blocker.style.width = SlideMgr.container.width + 'px';
         blocker.style.height = SlideMgr.container.height + 'px';
         blocker.style.position = 'absolute';
-        blocker.style.left = SlideMgr.container.ele.documentOffsetLeft + 'px';
-        blocker.style.top = SlideMgr.container.ele.documentOffsetTop + 'px';
+        blocker.style.left = SlideMgr.container.ele._osi_documentOffsetLeft + 'px';
+        blocker.style.top = SlideMgr.container.ele._osi_documentOffsetTop + 'px';
         blocker.setAttribute('class', 'blocker');
 
         percent.style.color = 'white';
@@ -241,7 +242,7 @@ var SlideMgr = {
                 y : sy + ston.unitY * (i - showAt),
                 rgba : 'rgba(' + rgb + ',' + _s_opacity + ')'
             };
-            SlideMgr.frame_container[i].ele_container.push(_s_layer);
+            if(SlideMgr.frame_container[i]) SlideMgr.frame_container[i].ele_container.push(_s_layer);
         }
 
         //normal condition
@@ -255,7 +256,7 @@ var SlideMgr = {
             rgba : 'rgba(' + rgb + ',' + opacity + ')'
         };
         for(var j = showEnd; j<hideAt; j++){
-            SlideMgr.frame_container[j].ele_container.push(normalLayer);
+            if(SlideMgr.frame_container[j]) SlideMgr.frame_container[j].ele_container.push(normalLayer);
         }
 
         //hide animation
@@ -270,7 +271,7 @@ var SlideMgr = {
                 y : y + ntoe.unitY * (k - hideAt),
                 rgba : 'rgba(' + rgb + ',' + _e_opacity + ')'
             };
-            SlideMgr.frame_container[k].ele_container.push(_e_layer);
+            if(SlideMgr.frame_container[k]) SlideMgr.frame_container[k].ele_container.push(_e_layer);
         }
 
     };
@@ -293,8 +294,6 @@ var SlideMgr = {
             for(var i = 0; i<len; i++){
 
                 var layer = ele_container[i];
-                console.log(layer.type);
-                console.log(layer.text);
                 switch(layer.type){
 
                     case SlideMgr.layer_type.TEXT :
@@ -336,7 +335,7 @@ var SlideMgr = {
         SlideMgr.scroll.ele = scroll;
 
         scroll.onmousedown = function(event){
-            SlideMgr.scroll.clicked_offset = event.clientY - SlideMgr.container.ele.documentOffsetTop - SlideMgr.scroll.ele.documentOffsetTop;
+            SlideMgr.scroll.clicked_offset = event.clientY - SlideMgr.container.ele._osi_documentOffsetTop - SlideMgr.scroll.ele._osi_documentOffsetTop;
             SlideMgr.scroll.clicked = true;
         };
 
@@ -356,43 +355,106 @@ var SlideMgr = {
         }
     };
 
+    //External Source
+    //------------------------------------------------------------------------
+    SlideMgr.util.getStyle = function (el, styleProp) {
+        var value, defaultView = (el.ownerDocument || document).defaultView;
+        if (defaultView && defaultView.getComputedStyle) {
+            styleProp = styleProp.replace(/([A-Z])/g, "-$1").toLowerCase();
+            return defaultView.getComputedStyle(el, null).getPropertyValue(styleProp);
+        } else if (el.currentStyle) { // IE
+            styleProp = styleProp.replace(/\-(\w)/g, function(str, letter) {
+                return letter.toUpperCase();
+            });
+            value = el.currentStyle[styleProp];
+            if (/^\d+(em|pt|%|ex)?$/i.test(value)) {
+                return (function(value) {
+                    var oldLeft = el.style.left, oldRsLeft = el.runtimeStyle.left;
+                    el.runtimeStyle.left = el.currentStyle.left;
+                    el.style.left = value || 0;
+                    value = el.style.pixelLeft + "px";
+                    el.style.left = oldLeft;
+                    el.runtimeStyle.left = oldRsLeft;
+                    return value;
+                })(value);
+            }
+            return value;
+        }
+    };
+
+    window.Object.defineProperty( Element.prototype, '_osi_documentOffsetTop', {
+        get: function () {
+            return this.offsetTop + ( this.offsetParent ? this.offsetParent._osi_documentOffsetTop : 0 );
+        }
+    } );
+
+    window.Object.defineProperty( Element.prototype, '_osi_documentOffsetLeft', {
+        get: function () {
+            return this.offsetLeft + ( this.offsetParent ? this.offsetParent._osi_documentOffsetLeft : 0 );
+        }
+    } );
+
+    var prefix = "", _addEventListener, onwheel, support;
+
+    // detect event model
+    if ( window.addEventListener ) {
+        _addEventListener = "addEventListener";
+    } else {
+        _addEventListener = "attachEvent";
+        prefix = "on";
+    }
+
+    // detect available wheel event
+    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+        document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+            "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+
+    window._osi_addWheelListener = function( elem, callback, useCapture ) {
+        _addWheelListener( elem, support, callback, useCapture );
+
+        // handle MozMousePixelScroll in older Firefox
+        if( support == "DOMMouseScroll" ) {
+            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
+        }
+    };
+
+    function _addWheelListener( elem, eventName, callback, useCapture ) {
+        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
+            !originalEvent && ( originalEvent = window.event );
+
+            // create a normalized event object
+            var event = {
+                // keep a ref to the original event object
+                originalEvent: originalEvent,
+                target: originalEvent.target || originalEvent.srcElement,
+                type: "wheel",
+                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+                deltaX: 0,
+                deltaZ: 0,
+                preventDefault: function() {
+                    originalEvent.preventDefault ?
+                        originalEvent.preventDefault() :
+                        originalEvent.returnValue = false;
+                }
+            };
+
+            // calculate deltaY (and deltaX) according to the event
+            if ( support == "mousewheel" ) {
+                event.deltaY = - 1/40 * originalEvent.wheelDelta;
+                // Webkit also support wheelDeltaX
+                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
+            } else {
+                event.deltaY = originalEvent.detail;
+            }
+
+            // it's time to fire the callback
+            return callback( event );
+
+        }, useCapture || false );
+    }
+
 })(window, document, SlideMgr);
 
-//External Source
-//------------------------------------------------------------------------
-function getStyle(el, styleProp) {
-    var value, defaultView = (el.ownerDocument || document).defaultView;
-    if (defaultView && defaultView.getComputedStyle) {
-        styleProp = styleProp.replace(/([A-Z])/g, "-$1").toLowerCase();
-        return defaultView.getComputedStyle(el, null).getPropertyValue(styleProp);
-    } else if (el.currentStyle) { // IE
-        styleProp = styleProp.replace(/\-(\w)/g, function(str, letter) {
-            return letter.toUpperCase();
-        });
-        value = el.currentStyle[styleProp];
-        if (/^\d+(em|pt|%|ex)?$/i.test(value)) {
-            return (function(value) {
-                var oldLeft = el.style.left, oldRsLeft = el.runtimeStyle.left;
-                el.runtimeStyle.left = el.currentStyle.left;
-                el.style.left = value || 0;
-                value = el.style.pixelLeft + "px";
-                el.style.left = oldLeft;
-                el.runtimeStyle.left = oldRsLeft;
-                return value;
-            })(value);
-        }
-        return value;
-    }
-}
 
-window.Object.defineProperty( Element.prototype, 'documentOffsetTop', {
-    get: function () {
-        return this.offsetTop + ( this.offsetParent ? this.offsetParent.documentOffsetTop : 0 );
-    }
-} );
 
-window.Object.defineProperty( Element.prototype, 'documentOffsetLeft', {
-    get: function () {
-        return this.offsetLeft + ( this.offsetParent ? this.offsetParent.documentOffsetLeft : 0 );
-    }
-} );
+
