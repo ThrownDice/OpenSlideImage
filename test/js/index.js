@@ -13,7 +13,7 @@ $(function(){
        animate_interval : 10,
        callback : function(){
 
-           SlideMgr.addText({
+           /*SlideMgr.addText({
                show_frame : 10,
                hide_frame : 50,
                animate_frame : 10,
@@ -31,6 +31,54 @@ $(function(){
                font : '30px Georgia',
                x : 200,
                y : 200
+           });*/
+
+           SlideMgr.addText({
+               show : {
+                   at : 10,
+                   animationFrame : 20,
+                   sx : 100,
+                   sy : 100,
+                   opacity : 0.0
+               },
+               hide : {
+                   at : 50,
+                   animationFrame : 20,
+                   ex : 200,
+                   ey : 200,
+                   opacity : 0.0
+               },
+               x : 150,
+               y : 150,
+               rgb : '255,255,255',
+               opacity : 1.0,
+               fontSize : '30px',
+               fontFamily : 'Georgia',
+               text : 'Hi! My Name is KANG JI HYEON'
+           });
+
+           SlideMgr.addText({
+               show : {
+                   at : 10,
+                   animationFrame : 40,
+                   sx : 100,
+                   sy : 100,
+                   opacity : 0.0
+               },
+               hide : {
+                   at : 60,
+                   animationFrame : 40,
+                   ex : 200,
+                   ey : -100,
+                   opacity : 1.0
+               },
+               x : 200,
+               y : 100,
+               rgb : '255,255,255',
+               opacity : 1.0,
+               fontSize : '30px',
+               fontFamily : 'Georgia',
+               text : 'Hi! My Name is KANG JI HYEON'
            });
 
        }
