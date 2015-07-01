@@ -6,7 +6,7 @@ $(function(){
        container : $('.canvas_test').get(0),
        start : 7,
        end : 100,
-       prefix : 'img/Journey.To.The.Edge.Of.The.Universe.2008.720p.BluRay.x264-REQ [PublicHD].avi-',
+       prefix : 'img/slide/Journey.To.The.Edge.Of.The.Universe.2008.720p.BluRay.x264-REQ [PublicHD].avi-',
        extendType : 'jpg',
        scrollColor : 'white',
        render_interval : 30,
@@ -59,6 +59,27 @@ $(function(){
                fontSize : '30px',
                fontFamily : 'Georgia',
                text : 'Hi! My Name is KANG JI HYEON'
+           });
+
+           SlideMgr.addImage({
+               show : {
+                   at : 10,
+                   animationFrame : 40,
+                   sx : 200,
+                   sy : 200,
+                   opacity : 0.0
+               },
+               hide : {
+                   at : 60,
+                   animationFrame : 40,
+                   ex : 300,
+                   ey : -100,
+                   opacity : 1.0
+               },
+               x : 300,
+               y : 300,
+               opacity : 1.0,
+               src : 'img/test_img.jpg'
            });
 
        }
