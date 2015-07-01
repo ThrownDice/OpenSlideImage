@@ -8,27 +8,42 @@ Add Element with option to adjust your purpose. (like frame number which is poin
 #Example
 ```javascript
 SlideMgr.setConfig({
-       container : container_element,
+       container : $('.canvas_test').get(0),
        start : 7,
        end : 100,
-       prefix : 'img/my-img-',
+       prefix : 'img/slideimg-',
        extendType : 'jpg',
        scrollColor : 'white',
        render_interval : 30,
        animate_interval : 10,
        callback : function(){
 
-       }
-});
+            //todo : after all img sets loaded
 
-SlideMgr.addElement({
-        innerHTML : 'Hello World',
-        show_frame : 1,
-        hide_frame : 30,
-        attr : {
-            left : '20px',
-            top : '30px',
-            color : 'white'
-        }
-});
+           SlideMgr.addText({
+               show : {
+                   at : 10,
+                   animationFrame : 20,
+                   sx : 100,
+                   sy : 100,
+                   opacity : 0.0
+               },
+               hide : {
+                   at : 50,
+                   animationFrame : 20,
+                   ex : 200,
+                   ey : 200,
+                   opacity : 0.0
+               },
+               x : 150,
+               y : 150,
+               rgb : '255,255,255',
+               opacity : 1.0,
+               fontSize : '30px',
+               fontFamily : 'Georgia',
+               text : 'Hi! My Name is KANG JI HYEON'
+           });
+
+       }
+   });
 ```
