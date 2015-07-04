@@ -126,6 +126,18 @@ var SlideMgr = {
         //requestAnimationFrame(SlideMgr.animate);
     };
 
+    SlideMgr.move = function(frame_number){
+
+        var dy = frame_number > SlideMgr.current_frame ? 1 : -1;
+        var i = SlideMgr.current_frame + dy;
+        SlideMgr.current_frame = frame_number;
+
+        for(i; i!=frame_number; i+=dy){
+
+        }
+
+    };
+
     SlideMgr.load = function(callback){
         var blocker = document.createElement('div');
         var percent = document.createElement('div');
