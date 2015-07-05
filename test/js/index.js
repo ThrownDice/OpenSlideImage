@@ -85,7 +85,11 @@ $(function(){
        }
    });
 
-
+    //other src
+    //-------------------------------------------------
+    $('.test1').on('mousedown', function(){
+        SlideMgr.move(50);
+    });
 
 
     /*SlideMgr.addElement({
