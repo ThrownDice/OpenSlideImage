@@ -201,6 +201,7 @@ var SlideMgr = {
         var frame = {};
         frame.img = img;
         frame.ele_container = [];
+        frame.events = [];
         SlideMgr.frame_container.push(frame);
 
         blocker.style.background = 'black';
@@ -237,6 +238,7 @@ var SlideMgr = {
             var frame = {};
             frame.img = img;
             frame.ele_container = [];
+            frame.events = [];
             SlideMgr.frame_container.push(frame);
         }else{
             SlideMgr.render_queue.push(SlideMgr.start);
@@ -426,6 +428,11 @@ var SlideMgr = {
 
     };
 
+    SlideMgr.addEvent = function(frame_number, callback){
+        SlideMgr.frame_container[frame_number].events.push(callback);
+    };
+
+
     SlideMgr.manageElement = function(){
 
     };
@@ -434,10 +441,12 @@ var SlideMgr = {
         if(SlideMgr.render_queue[0]){
             var frame = SlideMgr.frame_container[SlideMgr.render_queue[0] - SlideMgr.start];
             var ele_container = frame.ele_container;
-            var len = ele_container.length;
+            var events = frame.events;
+            var el_len = ele_container.length;
+            var ev_len = events.length;
             SlideMgr.canvas.context2d.drawImage(frame.img, 0,0,SlideMgr.container.width,SlideMgr.container.height);
 
-            for(var i = 0; i<len; i++){
+            for(var i = 0; i<el_len; i++){
                 var layer = ele_container[i];
                 switch(layer.type){
                     case SlideMgr.layer_type.TEXT :
@@ -454,6 +463,11 @@ var SlideMgr = {
                         break;
                 }
             }
+
+            for(var j = 0; j<ev_len; j++){
+                if(events[j]) events[j]();
+            }
+
             SlideMgr.render_queue.splice(0,1);
         }
     };

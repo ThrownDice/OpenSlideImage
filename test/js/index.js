@@ -16,28 +16,60 @@ $(function(){
            SlideMgr.addText({
                show : {
                    at : 10,
-                   animationFrame : 20,
+                   animationFrame : 30,
                    sx : 100,
                    sy : 100,
                    opacity : 0.0
                },
                hide : {
-                   at : 50,
-                   animationFrame : 20,
-                   ex : 200,
-                   ey : 200,
+                   at : 40,
+                   animationFrame : 30,
+                   ex : 100,
+                   ey : -100,
+                   opacity : 1.0
+               },
+               x : 100,
+               y : 150,
+               rgb : '255,255,255',
+               opacity : 1.0,
+               fontSize : '30px',
+               fontFamily : 'Georgia',
+               text : 'Hi I\'m KANG JI HYEON.'
+           });
+
+           SlideMgr.addEvent(30, function(){
+              console.log('30 fired');
+           });
+
+           SlideMgr.addEvent(60, function(){
+               console.log('60 fired');
+           });
+
+           /*SlideMgr.addText({
+               show : {
+                   at : 10,
+                   animationFrame : 30,
+                   sx : 100,
+                   sy : 100,
                    opacity : 0.0
                },
-               x : 150,
+               hide : {
+                   at : 40,
+                   animationFrame : 30,
+                   ex : 100,
+                   ey : -100,
+                   opacity : 1.0
+               },
+               x : 100,
                y : 150,
                rgb : '255,255,255',
                opacity : 1.0,
                fontSize : '30px',
                fontFamily : 'Georgia',
                text : 'Hi! My Name is KANG JI HYEON'
-           });
+           });*/
 
-           SlideMgr.addText({
+           /*SlideMgr.addText({
                show : {
                    at : 10,
                    animationFrame : 40,
@@ -80,7 +112,7 @@ $(function(){
                y : 300,
                opacity : 1.0,
                src : 'img/test_img.jpg'
-           });
+           });*/
 
        }
    });
@@ -91,40 +123,5 @@ $(function(){
         SlideMgr.move(50);
     });
 
-
-    /*SlideMgr.addElement({
-        innerHTML : 'test1 </br> test2',
-        show_frame : 1,
-        hide_frame : 30,
-        attr : {
-            left : '20px',
-            top : '30px',
-            color : 'white'
-        }
-    });
-
-    SlideMgr.addElement({
-        innerHTML : 'My Vision.......</br> is work together',
-        show_frame : 35,
-        hide_frame : 65,
-        attr : {
-            fontSize : '15pt',
-            color : 'white',
-            left : '300px',
-            top : '300px'
-        }
-    });
-
-    SlideMgr.addElement({
-        innerHTML : 'My hobby....</br> etc1...... Blah Blah~~ </br> OMG!!',
-        show_frame : 45,
-        hide_frame : 75,
-        attr : {
-            fontSize : '12pt',
-            color : 'white',
-            left : '600px',
-            top : '400px'
-        }
-    });*/
 
 });
