@@ -64,8 +64,8 @@ var SlideMgr = {
         SlideMgr.container.height = container_height;
 
         /*if(cfg.start && cfg.end && cfg.prefix && cfg.extendType){
-            console.log('open-slide-image.js) Not valid parameter!');
-            throw 'open-slide-image.js) Not valid parameter!';
+            console.log('open-slide1-image.js) Not valid parameter!');
+            throw 'open-slide1-image.js) Not valid parameter!';
         }*/
 
         SlideMgr.start = cfg.start;

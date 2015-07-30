@@ -4,9 +4,9 @@
 $(function(){
    SlideMgr.setConfig({
        container : $('.canvas_test').get(0),
-       start : 7,
-       end : 100,
-       prefix : 'img/slide/Journey.To.The.Edge.Of.The.Universe.2008.720p.BluRay.x264-REQ [PublicHD].avi-',
+       start : 6,
+       end : 176,
+       prefix : 'img/slide2/resume2.avi-',
        extendType : 'jpg',
        scrollColor : 'white',
        render_interval : 30,
@@ -15,15 +15,15 @@ $(function(){
 
            SlideMgr.addText({
                show : {
-                   at : 10,
-                   animationFrame : 30,
+                   at : 7,
+                   animationFrame : 2,
                    sx : 100,
                    sy : 100,
-                   opacity : 0.0
+                   opacity : 1.0
                },
                hide : {
-                   at : 40,
-                   animationFrame : 30,
+                   at : 9,
+                   animationFrame : 2,
                    ex : 100,
                    ey : -100,
                    opacity : 1.0
@@ -34,16 +34,41 @@ $(function(){
                opacity : 1.0,
                fontSize : '30px',
                fontFamily : 'Georgia',
-               text : 'Hi I\'m KANG JI HYEON.'
+               text : 'VISION'
            });
 
-           SlideMgr.addEvent(30, function(){
+           SlideMgr.addText({
+               show : {
+                   at : 7,
+                   animationFrame : 2,
+                   sx : 100,
+                   sy : 150,
+                   opacity : 1.0
+               },
+               hide : {
+                   at : 9,
+                   animationFrame : 2,
+                   ex : 100,
+                   ey : -100,
+                   opacity : 1.0
+               },
+               x : 100,
+               y : 150,
+               rgb : '255,255,255',
+               opacity : 1.0,
+               fontSize : '20px',
+               fontFamily : 'Nanum Gothic Coding',
+               text : '\uD55C\uAE00\uD14C\uC2A4\uD2B8'
+           });
+
+
+           /*SlideMgr.addEvent(30, function(){
               console.log('30 fired');
            });
 
            SlideMgr.addEvent(60, function(){
                console.log('60 fired');
-           });
+           });*/
 
            /*SlideMgr.addText({
                show : {

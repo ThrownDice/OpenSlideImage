@@ -109,6 +109,11 @@ var SlideMgr = {
             SlideMgr.scroll.clicked = false;
         });
 
+        document.addEventListener('resize', function(){
+            console.log("test");
+        });
+
+
         _osi_addWheelListener(SlideMgr.container.ele, function(event){
             if((SlideMgr.current_frame <= SlideMgr.end) && (SlideMgr.current_frame >= SlideMgr.start)){
                 event.deltaY > 0 ? SlideMgr.current_frame++ : SlideMgr.current_frame--;
@@ -179,9 +184,6 @@ var SlideMgr = {
             //requestAnimationFrame(_move);
             setTimeout(_move, 50);
         })(frame_number);
-
-
-
 
         for(; i!=frame_number; i+=dy){
             SlideMgr.render_queue.push(i);
@@ -312,7 +314,7 @@ var SlideMgr = {
                 y : sy + ston.unitY * (i - showAt),
                 rgba : 'rgba(' + rgb + ',' + _s_opacity + ')'
             };
-            if(SlideMgr.frame_container[i]) SlideMgr.frame_container[i].ele_container.push(_s_layer);
+            if(SlideMgr.frame_container[i - SlideMgr.start]) SlideMgr.frame_container[i - SlideMgr.start].ele_container.push(_s_layer);
         }
 
         //normal condition
@@ -326,7 +328,7 @@ var SlideMgr = {
             rgba : 'rgba(' + rgb + ',' + opacity + ')'
         };
         for(var j = showEnd; j<hideAt; j++){
-            if(SlideMgr.frame_container[j]) SlideMgr.frame_container[j].ele_container.push(normalLayer);
+            if(SlideMgr.frame_container[j - SlideMgr.start]) SlideMgr.frame_container[j - SlideMgr.start].ele_container.push(normalLayer);
         }
 
         //hide animation
@@ -341,7 +343,7 @@ var SlideMgr = {
                 y : y + ntoe.unitY * (k - hideAt),
                 rgba : 'rgba(' + rgb + ',' + _e_opacity + ')'
             };
-            if(SlideMgr.frame_container[k]) SlideMgr.frame_container[k].ele_container.push(_e_layer);
+            if(SlideMgr.frame_container[k - SlideMgr.start]) SlideMgr.frame_container[k - SlideMgr.start].ele_container.push(_e_layer);
         }
 
     };
@@ -396,7 +398,7 @@ var SlideMgr = {
                 y : sy + ston.unitY * (i - showAt),
                 opacity : _s_opacity
             };
-            if(SlideMgr.frame_container[i]) SlideMgr.frame_container[i].ele_container.push(_s_layer);
+            if(SlideMgr.frame_container[i - SlideMgr.start]) SlideMgr.frame_container[i - SlideMgr.start].ele_container.push(_s_layer);
         }
 
         //normal condition
@@ -409,7 +411,7 @@ var SlideMgr = {
             opacity : opacity
         };
         for(var j = showEnd; j<hideAt; j++){
-            if(SlideMgr.frame_container[j]) SlideMgr.frame_container[j].ele_container.push(normalLayer);
+            if(SlideMgr.frame_container[j - SlideMgr.start]) SlideMgr.frame_container[j - SlideMgr.start].ele_container.push(normalLayer);
         }
 
         //hide animation
@@ -423,7 +425,7 @@ var SlideMgr = {
                 y : y + ntoe.unitY * (k - hideAt),
                 opacity : _e_opacity
             };
-            if(SlideMgr.frame_container[k]) SlideMgr.frame_container[k].ele_container.push(_e_layer);
+            if(SlideMgr.frame_container[k - SlideMgr.start]) SlideMgr.frame_container[k - SlideMgr.start].ele_container.push(_e_layer);
         }
 
     };
@@ -452,6 +454,11 @@ var SlideMgr = {
                     case SlideMgr.layer_type.TEXT :
                         SlideMgr.canvas.context2d.font = layer.font;
                         SlideMgr.canvas.context2d.fillStyle = layer.rgba;
+
+                        //test
+                        SlideMgr.canvas.context2d.shadowBlur = 10;
+                        SlideMgr.canvas.context2d.shadowColor = "white";
+
                         SlideMgr.canvas.context2d.fillText(layer.text, layer.x, layer.y);
                         break;
                     case SlideMgr.layer_type.IMG :
